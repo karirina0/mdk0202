@@ -18,11 +18,8 @@ logger = logging.getLogger("notification_service")
 
 app = FastAPI(title="Notification Service", version="1.0.0")
 
-# Журнал "отправленных" уведомлений в памяти — для проверки в ЛР и в тестах.
 sent_notifications: list[dict] = []
 
-# Простая дедупликация повторно доставленных вебхуков по id задачи
-# (см. task-service/README.md, п.3 "нет идемпотентности").
 _seen_task_ids: set[str] = set()
 
 
@@ -39,7 +36,6 @@ async def task_created(task: IncomingTask) -> dict:
     }
     sent_notifications.append(notification)
 
-    # Эмуляция отправки уведомления — запись в лог/консоль.
     logger.info("NOTIFICATION: %s", notification["message"])
 
     return {"received": True}
@@ -47,5 +43,4 @@ async def task_created(task: IncomingTask) -> dict:
 
 @app.get("/api/notifications")
 async def list_notifications() -> list[dict]:
-    """Вспомогательный эндпоинт для лабораторной: посмотреть, что было 'отправлено'."""
     return sent_notifications
