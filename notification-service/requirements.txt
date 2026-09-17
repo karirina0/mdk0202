@@ -1,0 +1,6 @@
+fastapi>=0.141.1
+uvicorn[standard]>=0.41.0
+pydantic>=2.13.5
+
+# для тестов
+pytest>=9.1.1
