@@ -13,27 +13,31 @@
 
 ```bash
 # Терминал 1
-cd notification-service
-python -m venv .venv && source .venv/bin/activate
+cd task-service
 pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8001
+set NOTOFICATION_SERVICE_URL=http://localhost:8001
+uvicorn app.main:app --reload --port 8000
 ```
 
 ```bash
 # Терминал 2
-cd task-service
-python -m venv .venv && source .venv/bin/activate
+cd notification-service
 pip install -r requirements.txt
-export NOTIFICATION_SERVICE_URL=http://localhost:8001
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --reload --port 8001
 ```
 
 ## Ручное end-to-end тестирование (Этап 4, п.6 задания)
 
 ```bash
-curl -X POST http://localhost:8000/api/tasks \
-  -H "Content-Type: application/json" \
-  -d '{"title": "Купить билеты", "description": "На поезд до Москвы"}'
+curl -X 'POST' \
+  'http://127.0.0.1:8000/api/tasks' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "title": "тест3",
+  "description": "",
+  "status": "new"
+}'
 ```
 
 Ожидаемо:
@@ -52,14 +56,14 @@ curl -X POST http://localhost:8000/api/tasks \
 ## Тесты
 
 ```bash
-cd task-service && pytest -v
-cd ../notification-service && pytest -v
+task-service: pytest -v
+notification-service: pytest -v
 ```
 
 ## Git-flow, использованный в команде
 
 ```
-main  (защищена, только через PR)
+main 
  └─ dev
      ├─ feature/tasks-service          (Backend Task Service)
      └─ feature/notifications-service  (Backend Notification Service)
@@ -70,8 +74,6 @@ main  (защищена, только через PR)
 2. Каждый разработчик коммитит в свою ветку и открывает PR в `dev`.
 3. Tech Lead ревьюит оба PR на соответствие контракту.
 4. Первый одобренный PR мерджится в `dev` первым.
-5. Второй разработчик выполняет `git pull origin dev`, получает конфликт
-   (см. `REPORT.md`), разрешает его вместе с командой, дозаливает.
-6. Финальный PR `dev → main` — после успешного end-to-end теста.
+5. Финальный PR `dev → main` — после успешного end-to-end теста.
 
 Подробности конфликта и принятых решений — см. `REPORT.md`.
